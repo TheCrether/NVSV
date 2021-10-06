@@ -1,3 +1,6 @@
 {
-	"editor.detectIndentation": false
+  "editor.detectIndentation": false,
+  "editor.tabSize": 4,
+  "editor.tabCompletion": "on",
+  "editor.insertSpaces": true
 }
