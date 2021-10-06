@@ -1,0 +1,16 @@
+
+OS 	: Windows-10-10.0.19042-SP0
+CPU 	: AMD Ryzen 5 2500U with Radeon Vega Mobile Gfx
+RAM 	: 4.74GB/6.90GB
+Hostname	: CRETHER-MATE-WIN
+Architecture: X86_64
+Uptime 	: 151h 0min
+
+CPU Name 	: AMD Ryzen 5 2500U with Radeon Vega Mobile Gfx
+CPU Speed (min / cur / max): 0.0GHz / 1600.0GHz / 2000.0GHz
+CPU Usage 	: 0.8%
+Cores (Threads)	: 4 (8)
+
+RAM Usage 	: 4.75GB/6.90GB
+Usage (%) 	: 68.8%
+Swap 		: 7.95GB/14.15GB
