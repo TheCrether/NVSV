@@ -9,6 +9,18 @@ function colorInput(el) {
   window.drawColor = el.value;
 }
 
+function onMessage(e) {
+  const data = JSON.parse(e.data);
+  console.log("msg", data);
+  switch (data.type) {
+    case "user": {
+      window["user-count"].textContent = data.count;
+    }
+    case "stats": {
+    }
+  }
+}
+
 function load() {
   const connectingWrapper = document.getElementById("connecting-wrapper");
   const wsConnection = new WebSocket("ws://localhost:1337");
@@ -16,6 +28,7 @@ function load() {
     window.wsConnection = wsConnection;
     connectingWrapper.classList.add("hidden");
   });
+  wsConnection.addEventListener("message", onMessage);
   wsConnection.addEventListener("error", () => {
     connectingWrapper.textContent = "Could not get connected!";
     connectingWrapper.classList.remove("hidden");

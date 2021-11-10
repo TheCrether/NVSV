@@ -36,7 +36,7 @@ def user_event():
 async def draw(websocket, path):
     try:
         USERS.add(websocket)
-        websockets.broadcast(user_event())
+        websockets.broadcast(USERS, user_event())
         await websocket.send(state_event())
 
         async for message in websocket:
@@ -48,7 +48,7 @@ async def draw(websocket, path):
                     USERS, {key: data[key] for key in ['pos', 'color']})
 
     finally:
-        USERS.remoev(websocket)
+        USERS.remove(websocket)
         websockets.broadcast(USERS, user_event())
 
 
@@ -57,8 +57,8 @@ async def main():
     handler = HttpRequestHandler
 
     # Start the server
-    my_server = socketserver.TCPServer(("", PORT), handler)
-    my_server.serve_forever()
+    #my_server = socketserver.TCPServer(("", PORT), handler)
+    # my_server.serve_forever()
 
     async with websockets.serve(draw, "localhost", 1337):
         await asyncio.Future()
