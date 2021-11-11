@@ -11,17 +11,35 @@
     <div class="body-wrapper">
       <h1>Live Canvas</h1>
       <div class="top-wrapper">
-        <span class="color-text">Choose your color:</span>
-        <label for="color" id="color-label">
-          <input type="color" name="color" id="color" value="#f00000" />
-        </label>
+        <div class="top-part">
+          <span class="top-text">
+            Choose your width: <span id="width-text">3</span>
+          </span>
+          <label for="width-input" id="width-label">
+            <input
+              type="range"
+              name="width"
+              id="width-input"
+              step="2"
+              min="1"
+              max="13"
+              value="3"
+            />
+          </label>
+        </div>
+        <div class="top-part">
+          <span class="top-text">Choose your color:</span>
+          <label for="color" id="color-label">
+            <input type="color" name="color" id="color" value="#f00000" />
+          </label>
+        </div>
       </div>
       <div class="users-wrapper">
         Users online: <span id="user-count">0</span>
       </div>
       <div class="canvas-wrapper">
         <div id="connecting-wrapper">Connecting...</div>
-        <canvas width="800" height="600" />
+        <canvas width="800" height="600" id="canvas" />
       </div>
     </div>
     <script src="/script.js"></script>

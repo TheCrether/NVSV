@@ -6,7 +6,8 @@ import http.server
 import socketserver
 
 ###########################################
-STATE: dict = {"canvas": [[0]*800]*600}
+# STATE: dict = {"canvas": [["#ffffff"]*800]*600} # this is wrong because it messes up references
+STATE: dict = {"canvas": [["#fff" for j in range(800)] for i in range(600)]}
 
 USERS: set = set()
 
@@ -42,10 +43,10 @@ async def draw(websocket, path):
         async for message in websocket:
             data = json.loads(message)
             if data['action'] == 'draw':
-                x, y = data['pos'].values()
-                STATE["canvas"][x][y] = data['color']
+                x, y = data['pos']
+                STATE["canvas"][y][x] = data['color']
                 websockets.broadcast(
-                    USERS, {key: data[key] for key in ['pos', 'color']})
+                    USERS, draw_event({key: data[key] for key in ['pos', 'color', 'width']}))
 
     finally:
         USERS.remove(websocket)
@@ -57,7 +58,7 @@ async def main():
     handler = HttpRequestHandler
 
     # Start the server
-    #my_server = socketserver.TCPServer(("", PORT), handler)
+    # my_server = socketserver.TCPServer(("", PORT), handler)
     # my_server.serve_forever()
 
     async with websockets.serve(draw, "localhost", 1337):

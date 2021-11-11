@@ -36,7 +36,15 @@ body,
   justify-content: center;
 }
 
-.top-wrapper label {
+.top-wrapper .top-part {
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.top-wrapper #color-label {
   margin-left: 5px;
   background: transparent;
   border-radius: 50%;
@@ -49,7 +57,7 @@ body,
   pointer-events: all;
 }
 
-.top-wrapper input {
+.top-wrapper #color {
   cursor: pointer;
   width: var(--color-size);
   height: var(--color-size);
