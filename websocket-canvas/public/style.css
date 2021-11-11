@@ -18,11 +18,11 @@ body,
 
 .body-wrapper {
   padding-top: 10px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
   text-align: center;
+}
+
+.body-wrapper > * {
+  margin: 0 auto;
 }
 
 .top-wrapper {

@@ -35,8 +35,9 @@ def user_event():
 
 
 async def broadcast(socks, data):
-    for ws in socks:
-        await ws.send(data)
+    await asyncio.gather(*[ws.send(data) for ws in socks])
+    # for ws in socks:
+    #     await ws.send(data)
 
 
 async def draw(websocket, path):
@@ -70,12 +71,13 @@ async def websocket():
 
 
 def main():
-
-    # Start the server
-    Thread(target=webserver, args=[]).start()
-
     # Start websocket
     Thread(target=asyncio.run, args=[websocket()]).start()
+
+    # Start the server
+    _t = Thread(target=webserver, args=[])
+    _t.start()
+    _t.join()
 
 
 if __name__ == "__main__":
