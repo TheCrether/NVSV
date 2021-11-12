@@ -5,9 +5,6 @@ import websockets
 import http.server
 import socketserver
 
-from codecs import (utf_8_encode, utf_8_decode,
-                    latin_1_encode, latin_1_decode)
-
 from threading import Thread
 
 ###########################################
@@ -77,12 +74,18 @@ async def websocket():
 
 def main():
     # Start websocket
-    Thread(target=asyncio.run, args=[websocket()]).start()
+    _t1 = Thread(target=asyncio.run, args=[websocket()])
+    _t1.start()
 
     # Start the server
-    _t = Thread(target=webserver, args=[])
-    _t.start()
-    _t.join()
+    _t2 = Thread(target=webserver, args=[])
+    _t2.start()
+    try:
+        _t1.join(1)
+        _t2.join(1)
+    except KeyboardInterrupt:
+        print("Ctrl-c received! Sending kill")
+        quit(0)
 
 
 if __name__ == "__main__":
