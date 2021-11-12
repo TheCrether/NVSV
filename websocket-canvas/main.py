@@ -5,15 +5,22 @@ import websockets
 import http.server
 import socketserver
 
+from codecs import (utf_8_encode, utf_8_decode,
+                    latin_1_encode, latin_1_decode)
+
 from threading import Thread
 
 ###########################################
 # STATE: dict = {"canvas": [["#ffffff"]*800]*600} # this is wrong because it messes up references
-STATE: dict = {"canvas": [["#fff" for j in range(800)] for i in range(600)]}
+# STATE: dict = {"canvas": [["#fff" for j in range(800)] for i in range(600)]}
+STATE = {"type": "state", "history": []}
 
 USERS: set = set()
 
 PORT: int = 8080
+TYPES = {
+    "DRAW": 0x2
+}
 ###########################################
 
 
@@ -36,8 +43,6 @@ def user_event():
 
 async def broadcast(socks, data):
     await asyncio.gather(*[ws.send(data) for ws in socks])
-    # for ws in socks:
-    #     await ws.send(data)
 
 
 async def draw(websocket, path):
@@ -47,11 +52,11 @@ async def draw(websocket, path):
         await websocket.send(state_event())
 
         async for message in websocket:
-            data = json.loads(message)
-            if data['action'] == 'draw':
-                x, y = data['pos']
-                STATE["canvas"][y][x] = data['color']
-                await broadcast(USERS, draw_event({key: data[key] for key in ['pos', 'color', 'width']}))
+            data = message.encode()
+
+            if data[0] == TYPES["DRAW"]:
+                STATE["history"].append(data[1:].decode())
+                await broadcast(USERS, draw_event({"data": message[1:]}))
 
     finally:
         USERS.remove(websocket)
