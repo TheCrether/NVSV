@@ -14,7 +14,8 @@ STATE = {"type": "state", "history": []}
 
 USERS: set = set()
 
-PORT: int = 8080
+HTTP_PORT: int = 8080
+WS_PORT: int = 1337
 TYPES = {
     "DRAW": 0x2
 }
@@ -61,14 +62,15 @@ async def draw(websocket, path):
 
 
 def webserver():
-    with socketserver.TCPServer(("", PORT), Handler) as httpd:
-        print('serving on port: ', PORT)
+    with socketserver.TCPServer(("0.0.0.0", HTTP_PORT), Handler) as httpd:
+        print(f'serving on port: {HTTP_PORT} (http://localhost:{HTTP_PORT})')
         httpd.serve_forever()
 
 
 async def websocket():
-    async with websockets.serve(draw, "localhost", 1337):
-        print('websockets listening on port: 1337')
+    async with websockets.serve(draw, "0.0.0.0", WS_PORT):
+        print(
+            f'websockets listening on port: {WS_PORT} (ws://localhost:{WS_PORT})')
         await asyncio.Future()
 
 

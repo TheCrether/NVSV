@@ -143,7 +143,7 @@ function onMessage(e) {
 
 function load() {
   const connectingWrapper = document.getElementById("connecting-wrapper");
-  const wsConnection = new WebSocket("ws://localhost:1337");
+  const wsConnection = new WebSocket(`ws://${window.location.hostname}:1337`);
   wsConnection.addEventListener("open", () => {
     window.ws = wsConnection;
   });
