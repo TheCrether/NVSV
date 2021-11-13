@@ -78,8 +78,9 @@ function onMousedown(e) {
 
 function onMousemove(e) {
   if (window.isMouseDown) {
-    const x = e.offsetX;
-    const y = e.offsetY;
+    let r = window.canvas.getBoundingClientRect();
+    const x = e.offsetX || e.clientX - r.left;
+    const y = e.offsetY || e.clientY - r.top;
     draw(x, y);
   }
 }
@@ -104,8 +105,26 @@ function onMessage(e) {
       const connectingWrapper = document.getElementById("connecting-wrapper");
       connectingWrapper.classList.add("hidden");
       window.canvas.addEventListener("mousedown", onMousedown, false);
-      window.canvas.addEventListener("mouseup", onMouseup, false);
       window.canvas.addEventListener("mousemove", onMousemove, false);
+      window.canvas.addEventListener("mouseup", onMouseup, false);
+      window.canvas.addEventListener(
+        "touchstart",
+        (e) => onMousedown(e.touches[0]),
+        false
+      );
+      window.canvas.addEventListener(
+        "touchmove",
+        (e) => {
+          onMousemove(e.touches[0]);
+          e.preventDefault();
+        },
+        false
+      );
+      window.canvas.addEventListener(
+        "touchend",
+        (e) => onMouseup(e.changedTouches[0]),
+        false
+      );
       const ctx = window.canvas.getContext("2d");
       data.history.forEach((i) => {
         const bytes = strToBytes(i);
