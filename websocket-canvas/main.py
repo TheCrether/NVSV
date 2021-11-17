@@ -10,15 +10,16 @@ from threading import Thread
 ###########################################
 # STATE: dict = {"canvas": [["#ffffff"]*800]*600} # this is wrong because it messes up references
 # STATE: dict = {"canvas": [["#fff" for j in range(800)] for i in range(600)]}
-STATE = {"type": "state", "history": []}
-
-USERS: set = set()
-
+STATE:    dict = {"type": "state", "history": []}
+USERS:     set = set()
 HTTP_PORT: int = 8080
-WS_PORT: int = 1337
-TYPES = {
-    "DRAW": 0x2
+WS_PORT:   int = 1337
+TYPES: dict = {
+    "DRAWDOWN": 0x2,
+    "DRAW": 0x3,
+    "DRAWUP": 0x4,
 }
+USER_ID: int = 0
 ###########################################
 
 
@@ -35,8 +36,12 @@ def draw_event(data):
     return json.dumps({"type": "draw", **data})
 
 
-def user_event():
-    return json.dumps({"type": "user", "count": len(USERS)})
+def user_event(newUser=True):
+    global USER_ID
+    id = USER_ID
+    if newUser:
+        USER_ID = USER_ID + 1
+    return json.dumps({"type": "user", "count": len(USERS), "id": id})
 
 
 async def broadcast(socks, data):
@@ -52,13 +57,13 @@ async def draw(websocket, path):
         async for message in websocket:
             data = message.encode()
 
-            if data[0] == TYPES["DRAW"]:
-                STATE["history"].append(data[1:].decode())
-                await broadcast(USERS, draw_event({"data": message[1:]}))
+            if data[0] in [TYPES["DRAWDOWN"], TYPES["DRAW"], TYPES["DRAWUP"]]:
+                STATE["history"].append(data.decode())
+                await broadcast(USERS, draw_event({"data": message}))
 
     finally:
         USERS.remove(websocket)
-        await broadcast(USERS, user_event())
+        await broadcast(USERS, user_event(False))
 
 
 def webserver():
