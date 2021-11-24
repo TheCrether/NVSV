@@ -4,6 +4,7 @@ const TYPES = {
   DRAWDOWN: 2,
   DRAW: 3,
   DRAWUP: 4,
+  CLEAR: "clear",
 };
 
 function colorChange(el) {
@@ -102,9 +103,12 @@ function onMouseup(e) {
 function onMessage(e) {
   const data = JSON.parse(e.data);
   switch (data.type) {
+    case "id": {
+      window.userId = data.id;
+      break;
+    }
     case "user": {
       window["user-count"].textContent = data.count;
-      window.userId = data.id;
       break;
     }
     case "state": {
@@ -137,6 +141,12 @@ function onMessage(e) {
     }
     case "draw": {
       drawMessage(data.data);
+      break;
+    }
+    case "clear": {
+      const ctx = window.canvas.getContext("2d");
+      ctx.clearRect(0, 0, window.canvas.width, window.canvas.height);
+      break;
     }
   }
 }
@@ -157,7 +167,7 @@ function drawMessage(dataStr) {
   const id = bytes[9];
 
   ctx.beginPath();
-  if (bytes[0] == TYPES.DRAWDOWN) {
+  if (bytes[0] == TYPES.DRAWDOWN || !window.previousPoint[id]) {
     ctx.arc(x, y, ctx.lineWidth / 2, 0, 2 * Math.PI);
     ctx.fill();
   } else {
@@ -208,6 +218,12 @@ function load() {
   widthChange(width);
   width.addEventListener("input", (ev) => widthInput(ev.target));
   width.addEventListener("change", (ev) => widthChange(ev.target));
+
+  const clear = window["clear-canvas"];
+  clear.addEventListener(
+    "click",
+    () => window.ws && window.ws.send(JSON.stringify({ type: TYPES.CLEAR }))
+  );
 }
 
 window.addEventListener("load", load);

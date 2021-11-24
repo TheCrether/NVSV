@@ -12,12 +12,13 @@ from threading import Thread
 # STATE: dict = {"canvas": [["#fff" for j in range(800)] for i in range(600)]}
 STATE:    dict = {"type": "state", "history": []}
 USERS:     set = set()
-HTTP_PORT: int = 8080
+HTTP_PORT: int = 8081
 WS_PORT:   int = 1337
 TYPES: dict = {
     "DRAWDOWN": 0x2,
     "DRAW": 0x3,
     "DRAWUP": 0x4,
+    "CLEAR": 0x5
 }
 USER_ID: int = 0
 ###########################################
@@ -36,12 +37,16 @@ def draw_event(data):
     return json.dumps({"type": "draw", **data})
 
 
-def user_event(newUser=True):
+def user_event():
+    return json.dumps({"type": "user", "count": len(USERS)})
+
+
+def id_event(newUser=True):
     global USER_ID
     id = USER_ID
     if newUser:
         USER_ID = USER_ID + 1
-    return json.dumps({"type": "user", "count": len(USERS), "id": id})
+    return json.dumps({"type": "id", "id": id})
 
 
 async def broadcast(socks, data):
@@ -52,6 +57,7 @@ async def draw(websocket, path):
     try:
         USERS.add(websocket)
         await broadcast(USERS, user_event())
+        await websocket.send(id_event())
         await websocket.send(state_event())
 
         async for message in websocket:
@@ -60,10 +66,15 @@ async def draw(websocket, path):
             if data[0] in [TYPES["DRAWDOWN"], TYPES["DRAW"], TYPES["DRAWUP"]]:
                 STATE["history"].append(data.decode())
                 await broadcast(USERS, draw_event({"data": message}))
+                continue
+
+            data = json.loads(message)
+            if data["type"] == "clear":
+                await broadcast(USERS, message)
 
     finally:
         USERS.remove(websocket)
-        await broadcast(USERS, user_event(False))
+        await broadcast(USERS, user_event())
 
 
 def webserver():
