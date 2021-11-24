@@ -161,6 +161,7 @@ function drawMessage(dataStr) {
     bytesToHex([bytes[7]]) +
     bytesToHex([bytes[8]]);
   ctx.fillStyle = ctx.strokeStyle;
+  ctx.lineCap = "round";
 
   const x = bytes[2] * 256 + bytes[3];
   const y = bytes[4] * 256 + bytes[5];
